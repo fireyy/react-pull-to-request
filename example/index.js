@@ -2,7 +2,33 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var PullToRequest = require('../src/index');
 
+var DemoData = [
+  '测试数据','测试数据','测试数据','测试数据','测试数据','测试数据',
+  '测试数据','测试数据','测试数据','测试数据','测试数据','测试数据',
+  '测试数据','测试数据','测试数据','测试数据','测试数据','测试数据',
+  '测试数据','测试数据','测试数据','测试数据','测试数据','测试数据'
+];
+
 var Demo = React.createClass({
+  getInitialState: function() {
+    return {
+      list: []
+    };
+  },
+  componentDidMount: function() {
+    this.setState({
+      list: DemoData
+    });
+  },
+  getData: function(fn) {
+    setTimeout(function() {
+      var arr = this.state.list.concat(DemoData);
+      this.setState({
+        list: arr
+      });
+      fn && fn();
+    }.bind(this), 2000);
+  },
   onDragDownHelper: function(status) {
       if (status == 'default') {
           return '向下拉加载最新';
@@ -22,21 +48,25 @@ var Demo = React.createClass({
     }
   },
   onDragUpLoad: function(dragger) {
-      setTimeout(function() {
-          dragger.reset();
-          console.log("up");
-      }, 2000);
+    console.log("up");
+    this.getData(function(){
+      dragger.reset();
+    });
   },
   onDragDownLoad: function(dragger) {
-      setTimeout(function() {
-          dragger.reset();
-          console.log("down");
-      }, 2000);
+    console.log("down");
+    this.getData(function(){
+      dragger.reset();
+    });
   },
   render: function() {
+    var list = this.state.list.map(function(item, i){
+      return <li key={'li'+i}>{item}</li>
+    });
     return (
       <div>
         <PullToRequest
+          component={list}
           dragUpHelper={this.onDragUpHelper}
           dragDownHelper={this.onDragDownHelper}
           dragUpLoad={this.onDragUpLoad}

@@ -8,7 +8,7 @@ module.exports = {
     // Add your application's scripts below
     // './src/index',
     './example/index',
-    'webpack-dev-server/client?http://localhost:3000'
+    'webpack-dev-server/client?http://localhost:8080'
   ],
   output: {
     publicPath: '/',
