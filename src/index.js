@@ -13,12 +13,10 @@ var PullToRequest = React.createClass({
     disableDragDown: React.PropTypes.bool,
     disableDragUp: React.PropTypes.bool,
     threshold: React.PropTypes.number,
-    dragDownThreshold: React.PropTypes.number,
-    dragUpThreshold: React.PropTypes.number,
     dragDownRegionCls: React.PropTypes.string,
     dragUpRegionCls: React.PropTypes.string,
     dragDownHelper: React.PropTypes.func,
-    dragUpHepler: React.PropTypes.func,
+    dragUpHelper: React.PropTypes.func,
     preventDragHelper: React.PropTypes.bool,
     beforeDrag: React.PropTypes.func,
     dragDownDefault: React.PropTypes.func,
@@ -32,8 +30,6 @@ var PullToRequest = React.createClass({
   getDefaultProps: function() {
     return {
       threshold: 80,
-      dragDownThreshold: 80,
-      dragUpThreshold: 80,
       dragDownRegionCls: "latest",
       dragUpRegionCls: "more"
     }
@@ -103,8 +99,12 @@ var PullToRequest = React.createClass({
   _processDragDownHelper: function(status) {
     var options = this.props,
         helper = options.dragDownHelper;
-    if (!options.preventDragHelper && helper) {
-      this.setState({
+    if (!options.preventDragHelper) {
+      var header = ReactDOM.findDOMNode(this.refs.header);
+      if(header) {
+        header.className = this.props.dragDownRegionCls + " " + status;
+      }
+      helper && this.setState({
         downRegionHtml: helper.call(this, status)
       });
     }
@@ -113,8 +113,12 @@ var PullToRequest = React.createClass({
   _processDragUpHelper: function(status) {
     var options = this.props,
         helper = options.dragUpHelper;
-    if (!options.preventDragHelper && helper) {
-      this.setState({
+    if (!options.preventDragHelper) {
+      var footer = ReactDOM.findDOMNode(this.refs.footer);
+      if(footer) {
+        footer.className = this.props.dragUpRegionCls + " " + status;
+      }
+      helper && this.setState({
         upRegionHtml: helper.call(this, status)
       });
     }
@@ -133,7 +137,7 @@ var PullToRequest = React.createClass({
         upperStr;
     if (orient) {
       upperStr = orient.charAt(0).toUpperCase() + orient.substr(1);
-      overflow = offsetY > options['drag' + upperStr + 'Threshold'];
+      overflow = offsetY > options.threshold;
       if (!overflow && currentStatus != ActionStatus.default) {
         this['_processDrag' + upperStr + 'Helper'].call(this, ActionStatus.default);
         this._fireEvent('drag' + upperStr + 'Default', [this]);
@@ -196,11 +200,11 @@ var PullToRequest = React.createClass({
       }
       offsetY = stopY - blockY;
       offsetY = offsetY > 0 ? offsetY : 0;
-      overY = offsetY - options.dragDownThreshold;
+      overY = offsetY - options.threshold;
       if (overY > 100) {
-        offsetY = options.dragDownThreshold + 75 + (overY - 100) * 0.25;
+        offsetY = options.threshold + 75 + (overY - 100) * 0.25;
       } else if (overY > 50) {
-        offsetY = options.dragDownThreshold + 50 + (overY - 50) * 0.5;
+        offsetY = options.threshold + 50 + (overY - 50) * 0.5;
       }
       header.style.height = offsetY + 'px';
       coords.status = this._processStatus('down', offsetY, coords.status, true);
@@ -215,11 +219,11 @@ var PullToRequest = React.createClass({
       }
       offsetY = blockY - stopY;
       offsetY = offsetY > 0 ? offsetY : 0;
-      overY = offsetY - options.dragUpThreshold;
+      overY = offsetY - options.threshold;
       if (overY > 100) {
-          offsetY = options.dragUpThreshold + 75 + (overY - 100) * 0.2;
+          offsetY = options.threshold + 75 + (overY - 100) * 0.2;
       } else if (overY > 50) {
-          offsetY = options.dragUpThreshold + 50 + (overY - 50) * 0.5;
+          offsetY = options.threshold + 50 + (overY - 50) * 0.5;
       }
       ct.scrollTop = startScrollY + offsetY;
       footer.style.height = offsetY + 'px';
@@ -266,7 +270,7 @@ var PullToRequest = React.createClass({
       target = orient == 'down' ? header : footer;
       targetHeight = target.offsetHeight;
       upperStr = orient.charAt(0).toUpperCase() + orient.substr(1);
-      threshold = options['drag' + upperStr + 'Threshold'];
+      threshold = options.threshold;
       adjustHeight = (!options.preventDragHelper && targetHeight > threshold) ? threshold : 0;
       duration = Math.ceil((targetHeight - adjustHeight) / threshold * maxDuration);
       duration = duration > maxDuration ? maxDuration : duration;
@@ -329,7 +333,7 @@ var PullToRequest = React.createClass({
   render: function(){
     return(
       <div ref="container" className="container">
-        {this.state.downRegion ? <div ref="header" className={this.props.dragDownRegionCls}><div>{this.state.downRegionHtml}</div></div> : null}
+        {this.state.downRegion ? <div ref="header" className={this.props.dragDownRegionCls}><div dangerouslySetInnerHTML={{__html: this.state.upRegionHtml}}></div></div> : null}
           <div className="list">
             <ul>
               {
@@ -337,7 +341,7 @@ var PullToRequest = React.createClass({
               }
             </ul>
           </div>
-        {this.state.upRegion ? <div ref="footer" className={this.props.dragUpRegionCls}><div>{this.state.upRegionHtml}</div></div>: null}
+        {this.state.upRegion ? <div ref="footer" className={this.props.dragUpRegionCls}><div dangerouslySetInnerHTML={{__html: this.state.upRegionHtml}}></div></div>: null}
       </div>
     )
   }

@@ -29,24 +29,6 @@ var Demo = React.createClass({
       fn && fn();
     }.bind(this), 2000);
   },
-  onDragDownHelper: function(status) {
-      if (status == 'default') {
-          return '向下拉加载最新';
-      } else if (status == 'prepare') {
-          return '释放刷新';
-      } else if (status == 'load') {
-          return '加载中...';
-      }
-  },
-  onDragUpHelper: function(status){
-    if (status == 'default') {
-        return '向上拉加载更多';
-    } else if (status == 'prepare') {
-        return '释放刷新';
-    } else if (status == 'load') {
-        return '加载中...';
-    }
-  },
   onDragUpLoad: function(dragger) {
     console.log("up");
     this.getData(function(){

@@ -27,13 +27,36 @@ html, body, div, p {
     width: 100%;
     height: 80px;
     text-align: center;
-    font-size: 18px;
+    font-size: 40px;
+    font-weight: 700;
+    color: #aaa;
     line-height: 80px;
-    text-shadow: 1px 1px rgba(0, 0, 0, .3);
 }
 .more div {
     top: 0;
     bottom: auto;
+}
+.latest div:before,
+.more div:before {
+  content: '\279F';
+  display: block;
+  transition: all .25s ease;
+  transform: rotate(90deg);
+  text-align: center;
+}
+.more.prepare div:before {
+  transform: rotate(-90deg);
+}
+.latest.load div:before,
+.more.load div:before {
+  content: '\274B';
+  -webkit-animation: spin 3s infinite linear;
+}
+.latest div:before {
+  transform: rotate(-90deg);
+}
+.latest.prepare div:before {
+  transform: rotate(90deg);
 }
 .list ul {
   list-style: none;
@@ -46,4 +69,8 @@ html, body, div, p {
   line-height: 40px;
   text-indent: 10px;
   border-bottom: 1px solid #eee;
+}
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
 }
