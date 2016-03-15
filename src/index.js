@@ -50,20 +50,7 @@ var PullToRequest = React.createClass({
     this._events = {};
     this._draggable = true;
 
-    this._setupEvent();
-  },
-
-  _setupEvent: function() {
     this.ct.addEventListener('touchstart', this, false);
-    var _eventName = '', that = this;
-    for(var z in this.ActionStatus){
-      ['Up','Down'].forEach(function(key){
-        _eventName = 'drag' + key + z.charAt(0).toUpperCase() + z.substr(1);
-        if(that.props[_eventName]){
-          that.on(_eventName, that.props[_eventName]);
-        }
-      })
-    };
   },
 
   _createDragDownRegion: function() {
@@ -288,30 +275,10 @@ var PullToRequest = React.createClass({
     this._translate();
   },
 
-  on: function(type, fn) {
-    if (!this._events[type]) {
-      this._events[type] = [];
-    }
-    this._events[type].push(fn);
-  },
-
-  off: function(type, fn) {
-    if (this._events[type]) {
-      this._events[type].every(function(cb, i) {
-        if (cb === fn) {
-          this._events[type].splice(i, 1);
-          return false;
-        }
-      });
-    }
-  },
-
   _fireEvent: function(type, args) {
-    var me = this, ret;
-    if (me._events[type]) {
-      me._events[type].forEach(function(fn) {
-        ret = fn.apply(me, args || []);
-      });
+    var options = this.props, ret;
+    if (options[type]) {
+      ret = options[type].apply(this, args || []);
     }
     return ret;
   },
